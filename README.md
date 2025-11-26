@@ -8,11 +8,13 @@ Para aplicar al puesto deberás hacer la implementación de un proyecto de softw
 - Fácil de instalar y ejecutar en local (ver la sección de Instalación)
 - Variables de entorno en un archivo `.env` en caso de requerir configuración adicional
 - Logging de errores y eventos importantes
-- Hacer commits atómicos y con mensajes descriptivos de cada iteración o cambio importante
+- Hacer commits atómicos y con mensajes descriptivos de cada iteración o cambio importante para ver el progreso del proyecto.
 - Al menos una funcionalidad que utilice inteligencia artificial, como por ejemplo:
   - Resumen de un texto
   - Chat con un modelo de IA
   - Explicación de datos o información
+
+Visita este repositorio si necesitas ideas de proyectos: [Build Your Own X](https://github.com/codecrafters-io/build-your-own-x)
 
 **IMPORTANTE:** Deberás aplicar CONTEXT ENGINEERING para el desarrollo del proyecto. Revisa este recurso para entender de qué se trata:
 
@@ -90,7 +92,3 @@ npm run start
    - Tu nombre.
    - Descripción del proyecto.
    - Pasos de instalación y ejecución.
-
-## Uso
-
-Ya sea que tu proyecto sea web o CLI, deberá ser fácil de usar y entender.
