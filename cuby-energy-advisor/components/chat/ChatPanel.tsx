@@ -2,13 +2,15 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useCalculatorStore } from '@/context/CalculatorContext';
-import { Send, Sparkles, Bot } from 'lucide-react';
+import { Send, Sparkles, Bot, Phone } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import ContactModal from './ContactModal';
 
 export default function ChatPanel() {
   const { state } = useCalculatorStore();
   const [localInput, setLocalInput] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Product URL mapping for automatic link detection
   const productLinks: Record<string, string> = {
@@ -26,8 +28,6 @@ export default function ChatPanel() {
 
   // Use the correct useChat hook with proper configuration for AI SDK v5
   const { messages, status, sendMessage } = useChat({
-    api: '/api/chat',
-    initialMessages: [],
     onError: (error: any) => {
       console.error("FRONTEND CHAT ERROR:", error);
       alert("Error en el chat. Revisa la consola para más detalles.");
@@ -38,7 +38,7 @@ export default function ChatPanel() {
   });
 
   // Derive isLoading from status
-  const isLoading = status === 'in_progress';
+  const isLoading = status === 'streaming' || status === 'submitted';
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +153,14 @@ export default function ChatPanel() {
           <p className="text-xs text-gray-500">Experto en ahorro de energía</p>
         </div>
         
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors"
+          title="Hablar con un Humano"
+        >
+          <Phone className="w-4 h-4" />
+          <span className="hidden sm:inline">Hablar con Ventas</span>
+        </button>
       </div>
       
       {/* Messages Area */}
@@ -258,6 +266,13 @@ export default function ChatPanel() {
           </button>
         </form>
       </div>
+
+      <ContactModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        vertical={state.vertical}
+        acCount={state.ac_count}
+      />
     </div>
   );
 }
