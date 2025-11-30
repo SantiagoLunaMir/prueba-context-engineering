@@ -2,20 +2,32 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useCalculatorStore } from '@/context/CalculatorContext';
-import { Send, Sparkles, Bot, User } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { Send, Sparkles, Bot } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 export default function ChatPanel() {
   const { state } = useCalculatorStore();
-  
-  // Pass the calculator state in the body of every request
-  const chatHelpers = useChat() as any;
-  const { messages = [], input = '', handleInputChange, handleSubmit, isLoading } = chatHelpers;
+  const [localInput, setLocalInput] = useState('');
 
-  // Auto-scroll to bottom
+  // Use the correct useChat hook with proper configuration for AI SDK v5
+  const { messages, status, sendMessage } = useChat({
+    api: '/api/chat',
+    initialMessages: [],
+    onError: (error: any) => {
+      console.error("FRONTEND CHAT ERROR:", error);
+      alert("Error en el chat. Revisa la consola para más detalles.");
+    },
+    onFinish: (message: any) => {
+      console.log("DEBUG: Message finished:", message);
+    }
+  });
+
+  // Derive isLoading from status
+  const isLoading = status === 'in_progress';
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -23,6 +35,40 @@ export default function ChatPanel() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Helper to extract text from AI SDK v5 message format
+  const getMessageText = (message: any): string => {
+    // AI SDK v5 uses parts array
+    if (message.parts) {
+      return message.parts
+        .map((part: any) => (part.type === 'text' ? part.text : ''))
+        .join('');
+    }
+    // Fallback to content for compatibility
+    return message.content || '';
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!localInput.trim() || isLoading) return;
+
+    console.log("DEBUG: Sending message with state:", state);
+
+    // Use sendMessage (AI SDK v5 API) with body parameter for calculator state
+    try {
+      await sendMessage(
+        { text: localInput },
+        {
+          body: {
+            calculatorState: state
+          }
+        }
+      );
+      setLocalInput('');
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-white border-l border-gray-200 shadow-sm relative">
@@ -37,7 +83,7 @@ export default function ChatPanel() {
         </div>
         <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">
           <Sparkles className="w-3 h-3 text-blue-600" />
-          <span className="text-[10px] font-medium text-blue-700">Powered by Gemini</span>
+          <span className="text-[10px] font-medium text-blue-700">Powered by Claude</span>
         </div>
       </div>
       
@@ -72,9 +118,13 @@ export default function ChatPanel() {
               )}
             >
               {m.role === 'assistant' ? (
-                 <div dangerouslySetInnerHTML={{ __html: m.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
+                 <div dangerouslySetInnerHTML={{
+                   __html: getMessageText(m)
+                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                     .replace(/\n/g, '<br/>')
+                 }} />
               ) : (
-                m.content
+                getMessageText(m)
               )}
             </div>
           </div>
@@ -96,16 +146,16 @@ export default function ChatPanel() {
 
       {/* Input Area */}
       <div className="p-4 bg-white border-t border-gray-100">
-        <form onSubmit={(e) => handleSubmit(e, { body: { calculatorState: state } })} className="flex gap-2">
+        <form onSubmit={handleSendMessage} className="flex gap-2">
           <input 
-            value={input}
-            onChange={handleInputChange}
+            value={localInput}
+            onChange={(e) => setLocalInput(e.target.value)}
             placeholder="Pregunta sobre tu ahorro..." 
             className="flex-1 p-3 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
           <button 
             type="submit"
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !localInput.trim()}
             className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center shadow-md"
           >
             <Send className="w-4 h-4" />
