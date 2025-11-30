@@ -47,20 +47,6 @@ A **Hybrid Interface** that synchronizes state between a calculator and an AI ag
 4.  **Smart Lead Capture**
     *   The "Talk to Human" modal pre-fills inquiry subjects based on the active vertical (e.g., *"Enterprise Quote for Data Center"* vs. *"Home Installation Inquiry"*).
 
-## 🏗 Technical Architecture
-
-The application uses a global state store to sync the UI components and the AI context.
-
-```mermaid
-graph TD
-    User -->|Selects Vertical| State[Global Store (Context API)]
-    State -->|Updates Defaults| CalculatorUI
-    State -->|Injects Context| SystemPrompt
-    
-    SystemPrompt -->|Stream| GeminiAI[Google Gemini 1.5 Flash]
-    GeminiAI -->|Sales Pitch| ChatBotUI
-    CalculatorUI -->|User Input| State
-```
 
 ## 🛠️ Tech Stack
 
