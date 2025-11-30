@@ -46,6 +46,7 @@ A **Hybrid Interface** that synchronizes state between a calculator and an AI ag
 
 4.  **Smart Lead Capture**
     *   The "Talk to Human" modal pre-fills inquiry subjects based on the active vertical (e.g., *"Enterprise Quote for Data Center"* vs. *"Home Installation Inquiry"*).
+<img width="1060" height="686" alt="image" src="https://github.com/user-attachments/assets/4bd9a38d-88b8-455e-9998-04414ab2314a" />
 
 
 ## 🛠️ Tech Stack
