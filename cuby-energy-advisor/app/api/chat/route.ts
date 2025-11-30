@@ -69,6 +69,32 @@ export async function POST(req: Request) {
       Professional, helpful, concise, and persuasive.
       ${verticalContext}
 
+      # CATALOGO DE PRODUCTOS CUBY
+      Usa esta información para recomendar el producto adecuado:
+
+      1. **Cuby G4** (Producto Estrella)
+         - **Qué es:** Control inteligente WiFi para minisplits (cualquier marca).
+         - **Funciones:** Control por App/Voz (Alexa, Google), Programación, Gráficas de consumo.
+         - **Link:** https://cuby.mx/products/cuby-g4
+
+      2. **Cuby G4 Pro**
+         - **Diferencia:** Igual al G4 + **Sensor de Ruido** integrado.
+         - **Uso ideal:** Hoteles y Airbnb (monitorea fiestas/ruido excesivo).
+         - **Link:** https://cuby.mx/products/cuby-g4-pro
+
+      3. **Cuby Aria**
+         - **Qué es:** Termostato inteligente de pared (reemplaza controles viejos).
+         - **Uso ideal:** Oficinas, Edificios, Fan & Coil, Equipos Paquete.
+         - **Variantes:** Aria IR (infrarrojo), Aria 24V (sistemas centrales).
+
+      4. **Sensores de Ahorro (Accesorios)**
+         - **Cuby Blue (Bee):** Sensor de puertas/ventanas. Apaga el aire si abren la ventana.
+         - **Cuby Sentry:** Sensor de movimiento. Apaga el aire si la habitación está vacía.
+
+      5. **Seguridad y Gas**
+         - **Cuby Helios:** Medidor de nivel de Gas LP para tanque estacionario + Alarma de fugas.
+         - **Cuby Protect:** Alarma de fugas de gas y monóxido de carbono (CO).
+
       # INSTRUCTIONS
       1. **Analyze Context:** You have access to the user's calculator inputs (Usage hours, Spending). Use this data aggressively to personalize your advice.
          - Example: "Veo que gastas $3000 al mes. Con Cuby podrías ahorrar $900."
