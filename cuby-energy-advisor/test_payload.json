@@ -1,0 +1,14 @@
+{
+  "messages": [
+    { "role": "user", "content": "Hola, gasto mucho dinero en luz. Ayuda." }
+  ],
+  "calculatorState": {
+    "hours_per_day": 10,
+    "ac_count": 2,
+    "tariff": 3.0,
+    "current_temp_setting": 18,
+    "monthly_spend_current": 3000,
+    "monthly_savings_cuby": 900,
+    "roi_months": 5.5
+  }
+}
