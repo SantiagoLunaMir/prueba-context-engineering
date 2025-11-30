@@ -1,108 +1,134 @@
-# Prueba técnica Context Engineering
+# Cuby Smart Energy Advisor ⚡️
 
-## Descripción
+> A Context-Aware AI Sales Agent & ROI Calculator built for Cuby.mx.
 
-Para aplicar al puesto deberás hacer la implementación de un proyecto de software. El ámbito queda completamente a tu criterio, pero deberás cumplir con los siguientes requisitos:
+![Project Status](https://img.shields.io/badge/Status-MVP_Complete-success)
+![Tech Stack](https://img.shields.io/badge/Stack-Next.js_16_|_Gemini_AI_|_Tailwind-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-- Tener backend + frontend (puede ser UI en web o una utilidad CLI)
-- Fácil de instalar y ejecutar en local (ver la sección de Instalación)
-- Variables de entorno en un archivo `.env` en caso de requerir configuración adicional
-- Logging de errores y eventos importantes
-- Hacer commits atómicos y con mensajes descriptivos de cada iteración o cambio importante para ver el progreso del proyecto.
-- Al menos una funcionalidad que utilice inteligencia artificial, como por ejemplo:
-  - Resumen de un texto
-  - Chat con un modelo de IA
-  - Explicación de datos o información
+## 📖 Overview
 
-Recursos para ideas de proyectos:
+**Cuby Smart Energy Advisor** is a specialized sales tool designed to demonstrate the value of **Cuby G4** smart AC controllers. It bridges the gap between raw data and persuasive sales conversations by combining a hard-logic **ROI Calculator** with a soft-skill **AI Chatbot**.
 
-- [The-Tool-Coders](https://github.com/The-Cool-Coders/Project-Ideas-And-Resources)
-- [florinpop17/app-ideas](https://github.com/florinpop17/app-ideas)
-- [Build Your Own X](https://github.com/codecrafters-io/build-your-own-x)
-- [Roadmap.sh](https://roadmap.sh/)
-- [Awesome Self Hosted](https://github.com/awesome-selfhosted/awesome-selfhosted)
+The core philosophy is **Context-Awareness**: The AI doesn't just chat; it "watches" the user interact with the calculator. If a user indicates they run their ACs 24/7 in a Data Center, the AI instantly adapts its pitch to focus on *reliability* and *uptime* rather than just *cost savings*.
 
-**IMPORTANTE:** Deberás aplicar CONTEXT ENGINEERING para el desarrollo del proyecto. Revisa este recurso para entender de qué se trata:
+## 🎯 The Problem
+Selling IoT devices for energy management is complex because the value proposition shifts drastically depending on the customer:
+*   **Homeowners:** Care about monthly electricity bills and comfort.
+*   **Hotels/Airbnbs:** Care about guests leaving ACs on when rooms are empty.
+*   **Data Centers:** Care about critical infrastructure safety, overheating, and redundancy.
+*   **Schools:** Care about centralized scheduling and preventing unauthorized usage.
 
-[Context Engineering](https://www.youtube.com/watch?v=Egeuql3Lrzg)
+A static, one-size-fits-all calculator fails to address these specific pain points.
 
-En este repositorio ya está la estructura base de las carpetas para aplicar el Context Engineering.
+## 💡 The Solution
+A **Hybrid Interface** that synchronizes state between a calculator and an AI agent.
 
-> **Nota:** En el video se usa **Claude Code**, pero puedes utilizar cualquier herramienta de IA que se menciona más adelante, simplemente debes mencionar los archivos en el prompt.
->
-> Para la inicialización del proyecto es importante que dejes la estructura de las carpetas y archivos base. La IA solo deberá entender tus requerimientos y trabajar sobre la base que ya hiciste.
+### Key Features
 
-## Tecnologías
+1.  **Context Injection (RAG-Lite)**
+    *   The AI model receives real-time updates from the calculator's state.
+    *   **Example:** User sets "Hours/Day" to 24.
+    *   **AI Reaction:** "I notice you're running your ACs continuously. This is typical for server rooms. Are you looking for redundancy protection?"
 
-**IMPORTANTE:** Para la aplicación de Context Engineering, deberás utilizar al menos una de las siguientes herramientas:
+2.  **Multi-Vertical Architecture**
+    The application supports distinct profiles with tailored logic and defaults:
+    *   🏠 **Home Mode:** Optimizes for residential tariff tiers and comfort.
+    *   🏨 **Hotel Mode:** Focuses on "Auto-off" features for guest management.
+    *   🖥️ **Data Center Mode:** Prioritizes high-temp alerts and 24/7 uptime.
+    *   🎓 **School Mode:** Emphasizes mass-scheduling and remote locks.
 
-- **Claude Code**
-- **Codex**
-- **Gemini CLI** (gratis)
-- **Antigravity** (gratis)
-- **Cursor**
-- **Zed** (gratis)
+3.  **Real-Time ROI Calculation**
+    *   Calculates estimated monthly spend based on tariff, usage hours, and AC count.
+    *   Applies a "Temperature Penalty" for settings below 24°C (approx. 5% extra cost per degree).
+    *   Projects savings with Cuby's efficiency algorithms (~30% savings).
+    *   Determines the **Break-even Point** (months until the device pays for itself).
 
-Si decides utilizar **Cursor**, **Antigravity** o **Zed**, deberás utilizar las características de programación "Agéntica" para validar la aplicación de Context Engineering, no solamente el autocompletado. Generalmente hay una pestaña "Agents" que te permite crear un agente que te ayude a desarrollar el proyecto.
+4.  **Smart Lead Capture**
+    *   The "Talk to Human" modal pre-fills inquiry subjects based on the active vertical (e.g., *"Enterprise Quote for Data Center"* vs. *"Home Installation Inquiry"*).
 
-### Lenguajes de programación
+## 🏗 Technical Architecture
 
-Deberás utilizar al menos uno de los siguientes lenguajes de programación:
+The application uses a global state store to sync the UI components and the AI context.
 
-- **Python**
-- **JavaScript** (preferible **TypeScript**)
-
-### Frameworks
-
-Utilizar al menos uno de los siguientes frameworks y/o runtimes:
-
-- **FastAPI**
-- **Django**
-- **Express**
-- **Hono**
-- **NextJS**
-- **SvelteKit**
-- **PydanticAI**
-- **LangChain**
-- **Bun**
-- **NodeJS**
-- **uv**
-  
-Puedes utilizar cualquier otro framework que no esté en la lista o incluso que hagas toda la aplicación desde cero, pero tu proyecto deberá ser
-lo más robusto y escalable posible.
-
-## Instalación
-
-Se espera que tu proyecto sea fácil de instalar y ejecutar en local.
-
-### Python
-
-```bash
-pip install -r requirements.txt
-python main.py
+```mermaid
+graph TD
+    User -->|Selects Vertical| State[Global Store (Context API)]
+    State -->|Updates Defaults| CalculatorUI
+    State -->|Injects Context| SystemPrompt
+    
+    SystemPrompt -->|Stream| GeminiAI[Google Gemini 1.5 Flash]
+    GeminiAI -->|Sales Pitch| ChatBotUI
+    CalculatorUI -->|User Input| State
 ```
 
-O alternativamente:
+## 🛠️ Tech Stack
 
-```bash
-uv run main.py
+*   **Frontend Framework:** Next.js 16 (App Router)
+*   **Language:** TypeScript (Strict Mode)
+*   **AI Integration:** Vercel AI SDK + Google Gemini Provider
+*   **Styling:** TailwindCSS + Lucide Icons
+*   **Visualization:** Recharts (for savings projections)
+*   **State Management:** React Context API
+
+## 🚀 Getting Started
+
+### Prerequisites
+*   Node.js 18+
+*   npm or yarn
+*   A Google Gemini API Key
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/cuby-energy-advisor.git
+    cd cuby-energy-advisor
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    # Navigate to the app directory if needed, or install from root if workspace is set up
+    cd cuby-energy-advisor
+    npm install
+    ```
+
+3.  **Environment Setup:**
+    Create a `.env.local` file in the `cuby-energy-advisor` directory:
+
+    ```env
+    GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key_here
+    ```
+
+4.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
+
+5.  **Open in Browser:**
+    Visit `http://localhost:3000` to see the application.
+
+## 📂 Project Structure
+
+```
+.
+├── .context/               # Context Engineering files (The "Brain" of the project)
+│   ├── 01_project_context.md
+│   ├── 02_product_requirements.md
+│   └── ...
+├── cuby-energy-advisor/    # Main Next.js Application
+│   ├── app/                # App Router pages and layouts
+│   ├── components/         # React components (Calculator, Chat, UI)
+│   ├── context/            # Global State (CalculatorContext)
+│   ├── lib/                # Utility functions
+│   └── public/             # Static assets
+└── README.md               # This file
 ```
 
-### JavaScript/TypeScript
+## 🧠 Context Engineering
 
-```bash
-npm install
-npm run start
-```
+This project utilizes a **Context-Driven Development** approach. The `.context/` folder contains high-level documentation that serves as the "source of truth" for both human developers and AI assistants.
 
-## Pasos para aplicar
-
-1. Haz un fork de este repositorio.
-2. Clona el repositorio localmente.
-3. Haz el desarrollo de tu proyecto.
-4. Agrega tu cv en la carpeta `docs/`
-5. Crea un pull request indicando:
-   - Nombre del proyecto.
-   - Tu nombre.
-   - Descripción del proyecto.
-   - Pasos de instalación y ejecución.
+*   `02_product_requirements.md`: Defines the business logic for ROI calculations and vertical profiles.
+*   `05_knowledge_base.md`: Contains specific product details about Cuby G4.
+*   `06_chatbot_persona.md`: Defines the tone and behavior of the AI sales agent.
