@@ -10,6 +10,20 @@ export default function ChatPanel() {
   const { state } = useCalculatorStore();
   const [localInput, setLocalInput] = useState('');
 
+  // Product URL mapping for automatic link detection
+  const productLinks: Record<string, string> = {
+    'Cuby G4': 'https://cuby.mx/products/cuby-g4',
+    'Cuby': 'https://cuby.mx',
+  };
+
+  // Suggested questions for empty chat state
+  const suggestedQuestions = [
+    '¿Cuánto dinero estoy perdiendo al año?',
+    '¿Por qué me conviene el Cuby G4?',
+    '¿Qué pasa si mi aire es viejo?',
+    'Dame tips para ahorrar luz.'
+  ];
+
   // Use the correct useChat hook with proper configuration for AI SDK v5
   const { messages, status, sendMessage } = useChat({
     api: '/api/chat',
@@ -48,25 +62,82 @@ export default function ChatPanel() {
     return message.content || '';
   };
 
+  // Helper to convert product mentions to clickable links
+  const addProductLinks = (text: string): string => {
+    let processedText = text;
+
+    // Sort by length descending to match longer product names first (e.g., "Cuby G4" before "Cuby")
+    const sortedProducts = Object.entries(productLinks).sort((a, b) => b[0].length - a[0].length);
+
+    // PHASE 1: Replace product names with safe numeric placeholders
+    // This prevents nested replacements when "Cuby" matches inside "Cuby G4" URLs or placeholders
+    const placeholderMap: Record<string, string> = {};
+    let placeholderIndex = 0;
+
+    sortedProducts.forEach(([productName, url]) => {
+      const escapedName = productName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(\\*{0,2})(${escapedName})(\\*{0,2})`, 'gi');
+      const placeholder = `__PLH${placeholderIndex}__`; // Use numeric placeholder to avoid matching product names
+      placeholderIndex++;
+
+      // Store the actual HTML for this product
+      placeholderMap[placeholder] = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-semibold transition-colors inline-flex items-center gap-1">${productName}<svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>`;
+
+      // Replace with placeholder, preserving markdown asterisks
+      processedText = processedText.replace(regex, `$1${placeholder}$3`);
+    });
+
+    // PHASE 2: Replace all placeholders with actual HTML links
+    Object.entries(placeholderMap).forEach(([placeholder, html]) => {
+      processedText = processedText.replace(new RegExp(placeholder, 'g'), html);
+    });
+
+    return processedText;
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!localInput.trim() || isLoading) return;
 
     console.log("DEBUG: Sending message with state:", state);
 
+    // Save message and clear input immediately for better UX
+    const messageText = localInput;
+    setLocalInput(''); // Clear input BEFORE sending for instant feedback
+
     // Use sendMessage (AI SDK v5 API) with body parameter for calculator state
     try {
       await sendMessage(
-        { text: localInput },
+        { text: messageText },
         {
           body: {
             calculatorState: state
           }
         }
       );
-      setLocalInput('');
     } catch (error) {
       console.error("Error sending message:", error);
+    }
+  };
+
+  // Handler for suggested question chips
+  const handleSuggestedQuestion = async (question: string) => {
+    if (isLoading) return;
+
+    console.log("DEBUG: Sending suggested question:", question);
+
+    // Use sendMessage to programmatically send the suggested question
+    try {
+      await sendMessage(
+        { text: question },
+        {
+          body: {
+            calculatorState: state
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error sending suggested question:", error);
     }
   };
 
@@ -81,10 +152,7 @@ export default function ChatPanel() {
           </h2>
           <p className="text-xs text-gray-500">Experto en ahorro de energía</p>
         </div>
-        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">
-          <Sparkles className="w-3 h-3 text-blue-600" />
-          <span className="text-[10px] font-medium text-blue-700">Powered by Claude</span>
-        </div>
+        
       </div>
       
       {/* Messages Area */}
@@ -119,8 +187,13 @@ export default function ChatPanel() {
             >
               {m.role === 'assistant' ? (
                  <div dangerouslySetInnerHTML={{
-                   __html: getMessageText(m)
+                   __html:
+                     // CRITICAL: Process in correct order!
+                     // STEP 1: Add product links FIRST (to plain text before markdown)
+                     addProductLinks(getMessageText(m))
+                     // STEP 2: Then convert markdown to HTML
                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                     // STEP 3: Finally convert line breaks
                      .replace(/\n/g, '<br/>')
                  }} />
               ) : (
@@ -131,12 +204,15 @@ export default function ChatPanel() {
         ))}
         
         {isLoading && (
-          <div className="flex justify-start">
+          <div className="flex justify-start animate-in fade-in duration-300">
             <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-sm text-gray-500 italic">Pensando...</span>
               </div>
             </div>
           </div>
@@ -146,6 +222,26 @@ export default function ChatPanel() {
 
       {/* Input Area */}
       <div className="p-4 bg-white border-t border-gray-100">
+        {/* Suggested Questions - Only show when chat is empty */}
+        {messages.length === 0 && (
+          <div className="mb-3">
+            <p className="text-xs text-gray-500 mb-2">Preguntas sugeridas:</p>
+            <div className="flex flex-wrap gap-2">
+              {suggestedQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleSuggestedQuestion(question)}
+                  disabled={isLoading}
+                  className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <input 
             value={localInput}
