@@ -156,10 +156,10 @@ export default function ChatPanel() {
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors"
-          title="Talk to a Human"
+          title="Hablar con un Humano"
         >
           <Phone className="w-4 h-4" />
-          <span className="hidden sm:inline">Talk to Sales</span>
+          <span className="hidden sm:inline">Hablar con Ventas</span>
         </button>
       </div>
       

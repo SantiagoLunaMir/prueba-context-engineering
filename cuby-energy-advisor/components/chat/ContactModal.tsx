@@ -22,24 +22,24 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
       // Dynamic Content Logic
       switch (vertical) {
         case 'home':
-          setTitle('Contact Sales');
-          setSubject('I want to save on my home bills');
+          setTitle('Contactar Ventas');
+          setSubject('Quiero ahorrar en mis facturas del hogar');
           break;
         case 'school':
-          setTitle('Education Solutions');
-          setSubject(`Inquiry for ${acCount} classrooms`);
+          setTitle('Soluciones Educativas');
+          setSubject(`Consulta para ${acCount} aulas`);
           break;
         case 'datacenter':
-          setTitle('Enterprise Support');
-          setSubject('High-Availability Quote');
+          setTitle('Soporte Empresarial');
+          setSubject('Cotización de Alta Disponibilidad');
           break;
         case 'hotel':
-          setTitle('Hospitality Solutions');
-          setSubject(`Quote for ${acCount} rooms`);
+          setTitle('Soluciones Hoteleras');
+          setSubject(`Cotización para ${acCount} habitaciones`);
           break;
         default:
-          setTitle('Contact Sales');
-          setSubject('Inquiry about Cuby Energy Savings');
+          setTitle('Contactar Ventas');
+          setSubject('Consulta sobre ahorro de energía Cuby');
       }
     }
   }, [isOpen, vertical, acCount]);
@@ -55,7 +55,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
     // but a toast would be better if a library was available. 
     // Since I don't see a toast library installed, I'll use window.alert)
     const verticalName = vertical.charAt(0).toUpperCase() + vertical.slice(1);
-    alert(`Request sent to Cuby ${verticalName} Team!`);
+    alert(`¡Solicitud enviada al equipo de ${verticalName} de Cuby!`);
     
     onClose();
     
@@ -81,7 +81,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
           <button 
             onClick={onClose}
             className="p-1 hover:bg-blue-700 rounded-full transition-colors"
-            aria-label="Close modal"
+            aria-label="Cerrar modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -90,7 +90,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Asunto</label>
             <input
               type="text"
               id="subject"
@@ -101,7 +101,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
           </div>
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
             <input
               type="text"
               id="name"
@@ -109,12 +109,12 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="John Doe"
+              placeholder="Juan Pérez"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
             <input
               type="email"
               id="email"
@@ -122,12 +122,12 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="john@example.com"
+              placeholder="juan@ejemplo.com"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
             <input
               type="tel"
               id="phone"
@@ -135,7 +135,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="+1 (555) 000-0000"
+              placeholder="+52 (555) 000-0000"
             />
           </div>
 
@@ -145,7 +145,7 @@ export default function ContactModal({ isOpen, onClose, vertical, acCount }: Con
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               <Send className="w-4 h-4" />
-              Send Request
+              Enviar Solicitud
             </button>
           </div>
         </form>
