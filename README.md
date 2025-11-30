@@ -80,7 +80,7 @@ A **Hybrid Interface** that synchronizes state between a calculator and an AI ag
     ```
 
 3.  **Environment Setup:**
-    Create a `.env.local` file in the `cuby-energy-advisor` directory:
+    Create a `.env.local` file in the `cuby-energy-advisor` directory (or whatever LLM provider do you select):
 
     ```env
     GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key_here
