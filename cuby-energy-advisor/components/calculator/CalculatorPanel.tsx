@@ -1,18 +1,63 @@
 "use client";
 
 import { useCalculatorStore } from '@/context/CalculatorContext';
+import { Home, Building, Server, Lock, GraduationCap } from 'lucide-react';
+import { VerticalType } from '@/types';
 
 export default function CalculatorPanel() {
-  const { state, updateInput } = useCalculatorStore();
+  const { state, updateInput, setVertical } = useCalculatorStore();
+
+  const verticals: { id: VerticalType; label: string; icon: React.ElementType }[] = [
+    { id: 'home', label: 'Hogar', icon: Home },
+    { id: 'hotel', label: 'Hotel', icon: Building },
+    { id: 'datacenter', label: 'Data Center', icon: Server },
+    { id: 'school', label: 'Escuela', icon: GraduationCap },
+  ];
 
   return (
     <div className="p-6 space-y-6 h-full overflow-y-auto">
       <h2 className="text-2xl font-bold text-gray-800">Calculadora de Ahorro</h2>
+
+      {/* Vertical Selector */}
+      <div className="flex p-1 bg-gray-100 rounded-lg overflow-x-auto">
+        {verticals.map((v) => (
+          <button
+            key={v.id}
+            onClick={() => setVertical(v.id)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium rounded-md transition-colors min-w-[100px] ${
+              state.vertical === v.id
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <v.icon className="w-4 h-4" />
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Visual Feedback Badges */}
+      {state.vertical === 'datacenter' && (
+        <div className="bg-red-100 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+          <Server className="w-4 h-4" />
+          Modo crítico: Prioridad de tiempo de actividad y seguridad
+        </div>
+      )}
+      {state.vertical === 'school' && (
+        <div className="bg-yellow-100 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+           <GraduationCap className="w-4 h-4" />
+           Sincronización de calendario: Control de programación activo
+        </div>
+      )}
       
       {/* Hours per Day */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Horas de uso al día: <span className="font-bold text-blue-600">{state.hours_per_day}h</span>
+        <label className="block text-sm font-medium text-gray-700 flex justify-between">
+          <span>Horas de uso al día:</span>
+          <span className="font-bold text-blue-600 flex items-center gap-1">
+             {state.hours_per_day}h
+             {state.vertical === 'datacenter' && <Lock className="w-3 h-3" />}
+          </span>
         </label>
         <input
           type="range"
@@ -20,7 +65,8 @@ export default function CalculatorPanel() {
           max="24"
           value={state.hours_per_day}
           onChange={(e) => updateInput('hours_per_day', Number(e.target.value))}
-          className="w-full accent-blue-600"
+          disabled={state.vertical === 'datacenter'}
+          className={`w-full accent-blue-600 ${state.vertical === 'datacenter' ? 'opacity-50 cursor-not-allowed' : ''}`}
         />
       </div>
 
@@ -32,7 +78,7 @@ export default function CalculatorPanel() {
         <input
           type="number"
           min="1"
-          max="10"
+          max="50"
           value={state.ac_count}
           onChange={(e) => updateInput('ac_count', Number(e.target.value))}
           className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"

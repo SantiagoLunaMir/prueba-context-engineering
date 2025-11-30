@@ -1,11 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CalculatorInputs, CalculatorState, CalculatorContextType } from '../types';
+import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import { CalculatorInputs, CalculatorState, CalculatorContextType, VerticalType } from '../types';
 
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
 
 const DEFAULT_INPUTS: CalculatorInputs = {
+  vertical: 'home',
   hours_per_day: 8,
   ac_count: 1,
   tariff: 3.00,
@@ -14,14 +15,9 @@ const DEFAULT_INPUTS: CalculatorInputs = {
 
 export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULT_INPUTS);
-  const [results, setResults] = useState({
-    monthly_spend_current: 0,
-    monthly_savings_cuby: 0,
-    roi_months: 0,
-  });
 
   // Calculation Logic
-  useEffect(() => {
+  const results = useMemo(() => {
     const { hours_per_day, ac_count, tariff, current_temp_setting } = inputs;
 
     // 1. Calculate Temp Penalty
@@ -58,12 +54,11 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
       ? total_investment / monthly_savings_cuby 
       : 0;
 
-    setResults({
+    return {
       monthly_spend_current,
       monthly_savings_cuby,
       roi_months,
-    });
-
+    };
   }, [inputs]);
 
   const updateInput = (key: keyof CalculatorInputs, value: number) => {
@@ -73,13 +68,29 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const setVertical = (vertical: VerticalType) => {
+    setInputs(prev => {
+      let newInputs = { ...prev, vertical };
+      if (vertical === 'home') {
+        newInputs = { ...newInputs, hours_per_day: 8, ac_count: 1, tariff: 3.00 };
+      } else if (vertical === 'hotel') {
+        newInputs = { ...newInputs, hours_per_day: 12, ac_count: 10, tariff: 4.00 };
+      } else if (vertical === 'datacenter') {
+        newInputs = { ...newInputs, hours_per_day: 24, ac_count: 2, tariff: 4.50 };
+      } else if (vertical === 'school') {
+        newInputs = { ...newInputs, hours_per_day: 9, ac_count: 20, tariff: 3.50 };
+      }
+      return newInputs;
+    });
+  };
+
   const state: CalculatorState = {
     ...inputs,
     ...results,
   };
 
   return (
-    <CalculatorContext.Provider value={{ state, updateInput }}>
+    <CalculatorContext.Provider value={{ state, updateInput, setVertical }}>
       {children}
     </CalculatorContext.Provider>
   );

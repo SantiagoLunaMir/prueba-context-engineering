@@ -25,6 +25,40 @@ export async function POST(req: Request) {
     const modelMessages = convertToModelMessages(messages);
     console.log("DEBUG: Converted messages (ModelMessage format):", JSON.stringify(modelMessages, null, 2));
 
+    const vertical = calculatorState?.vertical || 'home';
+    let verticalContext = "";
+
+    if (vertical === 'hotel') {
+      verticalContext = `
+      **Vertical: HOTEL**
+      - **Focus:** Preventing guest abuse (leaving AC on when out), auto-off features, and centralized management.
+      - **Key Benefit:** "Stop cooling empty rooms."
+      - **Tone:** Professional, business-oriented.
+      `;
+    } else if (vertical === 'datacenter') {
+      verticalContext = `
+      **Vertical: DATA CENTER**
+      - **Focus:** Safety, high-temp alerts, redundancy, and protecting critical hardware.
+      - **Key Benefit:** "Prevent downtime and equipment failure."
+      - **Constraint:** DO NOT talk about "comfort" or "sleeping well". Servers don't sleep. Talk about uptime and reliability.
+      - **Tone:** Technical, critical, reliable.
+      `;
+    } else if (vertical === 'school') {
+      verticalContext = `
+      **Vertical: SCHOOL**
+      - **Focus:** "Mass Turn-Off" (end of day), "Temperature Limits" (preventing students from setting 16°C), and "Hard Schedules".
+      - **Key Benefit:** "Control energy waste in classrooms automatically."
+      - **Tone:** Administrative, organized, responsible.
+      `;
+    } else {
+      verticalContext = `
+      **Vertical: HOME**
+      - **Focus:** Comfort, monthly bill savings, and convenience (app control).
+      - **Key Benefit:** "Save money without sacrificing comfort."
+      - **Tone:** Friendly, helpful.
+      `;
+    }
+
     const systemPrompt = `
       # ROLE
       You are "CubyBot", an expert energy consultant for Cuby.mx.
@@ -33,6 +67,7 @@ export async function POST(req: Request) {
 
       # TONE
       Professional, helpful, concise, and persuasive.
+      ${verticalContext}
 
       # INSTRUCTIONS
       1. **Analyze Context:** You have access to the user's calculator inputs (Usage hours, Spending). Use this data aggressively to personalize your advice.
@@ -42,6 +77,7 @@ export async function POST(req: Request) {
       4. **Format:** Keep responses short (max 3 sentences) unless asked for a detailed explanation. Use Markdown for bolding key savings numbers.
 
       # CURRENT USER CONTEXT
+      - Vertical: ${vertical}
       - Hours of Usage per Day: ${calculatorState?.hours_per_day || 'Unknown'} hours
       - Number of ACs: ${calculatorState?.ac_count || 'Unknown'}
       - Electricity Tariff: $${calculatorState?.tariff || '3.0'} MXN/kWh
