@@ -90,6 +90,7 @@ export async function POST(req: Request) {
       4. **Sensores de Ahorro (Accesorios)**
          - **Cuby Blue (Bee):** Sensor de puertas/ventanas. Apaga el aire si abren la ventana.
          - **Cuby Sentry:** Sensor de movimiento. Apaga el aire si la habitación está vacía.
+         - **Cuby Zen:** Sensor de Temperatura y Humedad Relativa.
 
       5. **Seguridad y Gas**
          - **Cuby Helios:** Medidor de nivel de Gas LP para tanque estacionario + Alarma de fugas.
